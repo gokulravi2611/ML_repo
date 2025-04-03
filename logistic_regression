@@ -1,0 +1,59 @@
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import roc_auc_score, roc_curve
+insurance_df=pd.read_csv("C:\\Users\\gokul\\Downloads\\Medicalpremium.csv")
+insurance_df.info()
+insurance_df.describe()
+insurance_df.describe().T
+
+graph=insurance_df.hist(figsize=(10,10))
+heat_map=sns.heatmap(insurance_df.corr(),annot=True,cmap='RdYlGn',linewidths=0.5)
+plt.figsize=(12,10)
+plt.show()
+x=insurance_df.drop(['PremiumPrice'],axis=1)
+y=insurance_df['PremiumPrice']
+standard_scaler=StandardScaler()
+
+columns=['Age','Diabetes','BloodPressureProblems','AnyTransplants','AnyChronicDiseases','Height','Weight','KnownAllergies','HistoryOfCancerInFamily','NumberOfMajorSurgeries']
+X=pd.DataFrame(standard_scaler.fit_transform(insurance_df.drop(['PremiumPrice'],axis=1)),columns=columns)
+
+
+X.head()
+X_train,X_test,y_train,y_test=train_test_split(X,y,test_size=0.2,random_state=42)
+
+from sklearn import metrics
+from sklearn.metrics import accuracy_score
+linear_model=LogisticRegression()
+linear_model.fit(X_train,y_train)
+
+print("Train Accuracy:",linear_model.score(X_train,y_train))
+
+linear_train=linear_model.predict(X_train)
+linear_test=linear_model.predict(X_test)
+print("Test Accuracy:",linear_model.score(X_test,y_test))
+
+linear_model.feature_names_in_
+from sklearn.metrics import classification_report
+
+print(classification_report(y_test,linear_test))
+age = int(input("Enter Age: "))
+diabetes = int(input("Do you have Diabetes? (1 for Yes, 0 for No): "))
+bp_problems = int(input("Do you have Blood Pressure Problems? (1 for Yes, 0 for No): "))
+transplants = int(input("Any Transplants? (1 for Yes, 0 for No): "))
+chronic_diseases = int(input("Any Chronic Diseases? (1 for Yes, 0 for No): "))
+height = float(input("Enter Height (in cm): "))
+weight = float(input("Enter Weight (in kg): "))
+allergies = int(input("Any Known Allergies? (1 for Yes, 0 for No): "))
+cancer_history = int(input("Family history of Cancer? (1 for Yes, 0 for No): "))
+major_surgeries = int(input("Number of Major Surgeries: "))
+
+user_input = standard_scaler.transform([[age, diabetes, bp_problems, transplants, chronic_diseases, height, weight, allergies, cancer_history, major_surgeries]])
+premium = linear_model.predict(user_input)
+
+print("Predicted Premium Price: ", premium[0])
